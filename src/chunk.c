@@ -4,6 +4,8 @@
 
 #include "chunk.h"
 
+const uint32_t MAX_CHUNK_LENGTH = 2147483647;
+
 uint32_t swap_endian(uint32_t val) {
     return ((val >> 24) & 0xff) |
            ((val >> 8) & 0xff00) |
@@ -30,6 +32,11 @@ CHUNK* read_chunk(FILE *fileptr) {
         free(chunk);
         return NULL;
     }
+    /* if (chunk->length > MAX_CHUNK_LENGTH) { */
+    /*     printf("Chunk Size too big: %u\n", chunk->length); */
+    /*     free(chunk); */
+    /*     return NULL; */
+    /* } */
     chunk->length = swap_endian(chunk->length);
 
     // Read Chunk Type
@@ -47,6 +54,7 @@ CHUNK* read_chunk(FILE *fileptr) {
     }
     if (fread(chunk->data, sizeof(uint8_t), chunk->length, fileptr) != chunk->length) {
         printf("Error: Couldn't read bytes for Chunk Data.\n");
+        free(chunk->data);
         free(chunk);
         return NULL;
     }
@@ -55,6 +63,7 @@ CHUNK* read_chunk(FILE *fileptr) {
     uint8_t temp_crc[4];
     if (fread(temp_crc, 1, 4, fileptr) != 4) {
         printf("Error: Couldn't read CRC.\n");
+        free(chunk->data);
         free(chunk);
         return NULL;
     }

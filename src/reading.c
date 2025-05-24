@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "chunk.h"
 #include "png.h"
@@ -13,7 +14,7 @@ int main(int argc, char *argv[]) {
 
     // Open input file
     char *infile = argv[1];
-    FILE *inptr = fopen(infile, "rb");
+    FILE *inptr = fopen(infile, "rb+");
     if (inptr == NULL) {
         printf("Could not open %s\n", infile);
         return 1;
@@ -30,18 +31,32 @@ int main(int argc, char *argv[]) {
     }
 
     // Read the first next chunk
-    CHUNK *chunk = read_chunk(inptr);
-    if (chunk == NULL) {
-        printf("Error reading Chunk. Exiting.\n");
-        fclose(inptr);
-        return 1;
-    } else {
+    /* CHUNK *chunk = read_chunk(inptr); */
+    /* if (chunk == NULL) { */
+    /*     printf("Error reading Chunk. Exiting.\n"); */
+    /*     fclose(inptr); */
+    /*     return 1; */
+    /* } else { */
+    /*     printf("Chunk Type: %.4s\n", chunk->chunk_type.type_code); */
+    /* } */
+
+    // Start reading Chunks to the End of File! (I guess)
+    CHUNK *chunk;
+    while ((chunk = read_chunk(inptr)) != NULL) {
         printf("Chunk Type: %.4s\n", chunk->chunk_type.type_code);
+        if (strcmp(chunk->chunk_type.type_code, "IEND") == 0) {
+            printf("Reached end of PNG file.\n");
+            free(chunk->data);
+            free(chunk);
+            break;
+        }
+
+        // Free chunk after using it
+        free(chunk->data);
+        free(chunk);
     }
 
     // Free shit and close file
-    free(chunk->data);
-    free(chunk);
     fclose(inptr);
     return 0;
 }
