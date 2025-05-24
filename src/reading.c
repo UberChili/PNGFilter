@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,21 +31,18 @@ int main(int argc, char *argv[]) {
         printf("Valid PNG file.\n");
     }
 
-    // Read the first next chunk
-    /* CHUNK *chunk = read_chunk(inptr); */
-    /* if (chunk == NULL) { */
-    /*     printf("Error reading Chunk. Exiting.\n"); */
-    /*     fclose(inptr); */
-    /*     return 1; */
-    /* } else { */
-    /*     printf("Chunk Type: %.4s\n", chunk->chunk_type.type_code); */
-    /* } */
-
     // Start reading Chunks to the End of File! (I guess)
     CHUNK *chunk;
-    while ((chunk = read_chunk(inptr)) != NULL) {
+    while (true) {
+        chunk = read_chunk(inptr);
+        if (chunk == NULL) {
+            printf("Error reading Chunk or reached unexpected end of file.\n");
+            break;
+        }
+
         printf("Chunk Type: %.4s\n", chunk->chunk_type.type_code);
-        if (strcmp(chunk->chunk_type.type_code, "IEND") == 0) {
+        if (strncmp(chunk->chunk_type.type_code, "IEND",
+                    sizeof(chunk->chunk_type.type_code)) == 0) {
             printf("Reached end of PNG file.\n");
             free(chunk->data);
             free(chunk);
