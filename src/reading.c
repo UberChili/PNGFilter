@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
     PNGSIGNATUREHEADER sh;
     if (!valid_SH(&sh, inptr)) {
         printf("Not a valid PNG File.\n");
+        return 1;
     } else {
         printf("Valid PNG file.\n");
     }
