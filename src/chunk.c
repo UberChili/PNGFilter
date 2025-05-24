@@ -1,0 +1,64 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "chunk.h"
+
+uint32_t swap_endian(uint32_t val) {
+    return ((val >> 24) & 0xff) |
+           ((val >> 8) & 0xff00) |
+           ((val << 8) & 0xff0000) |
+           ((val << 24) & 0xff000000);
+}
+
+CHUNK* read_chunk(FILE *fileptr) {
+    if (fileptr == NULL) {
+        printf("Error with file.\n");
+        return NULL;
+    }
+
+    // Allocating memory for chunk
+    CHUNK *chunk = malloc(sizeof(CHUNK));
+    if (chunk == NULL) {
+        printf("Error allocating memory for Chunk.\n");
+        return NULL;
+    }
+
+    // Read length
+    if (fread(&chunk->length, sizeof(uint32_t), 1, fileptr) != 1) {
+        printf("Error: Couldn't read bytes for Length.\n");
+        free(chunk);
+        return NULL;
+    }
+    chunk->length = swap_endian(chunk->length);
+
+    // Read Chunk Type
+    if (fread(&chunk->chunk_type, sizeof(chunk->chunk_type), 1, fileptr) != 1) {
+        printf("Error: Couldn't read bytes for Chunk Type.\n");
+        free(chunk);
+        return NULL;
+    }
+
+    // Allocate and Read Data
+    chunk->data = malloc(sizeof(uint8_t) * chunk->length);
+    if (chunk->data == NULL) {
+        printf("Error: Couldn't allocate memory for Chunk Data.\n");
+        return NULL;
+    }
+    if (fread(chunk->data, sizeof(uint8_t), chunk->length, fileptr) != chunk->length) {
+        printf("Error: Couldn't read bytes for Chunk Data.\n");
+        free(chunk);
+        return NULL;
+    }
+
+    // Read CRC into temporary buffer, then copy
+    uint8_t temp_crc[4];
+    if (fread(temp_crc, 1, 4, fileptr) != 4) {
+        printf("Error: Couldn't read CRC.\n");
+        free(chunk);
+        return NULL;
+    }
+    memcpy(&chunk->crc, temp_crc, 4);
+
+    return chunk;
+}
