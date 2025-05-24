@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "chunk.h"
@@ -7,13 +7,11 @@
 const uint32_t MAX_CHUNK_LENGTH = 2147483647;
 
 uint32_t swap_endian(uint32_t val) {
-    return ((val >> 24) & 0xff) |
-           ((val >> 8) & 0xff00) |
-           ((val << 8) & 0xff0000) |
-           ((val << 24) & 0xff000000);
+    return ((val >> 24) & 0xff) | ((val >> 8) & 0xff00) |
+           ((val << 8) & 0xff0000) | ((val << 24) & 0xff000000);
 }
 
-CHUNK* read_chunk(FILE *fileptr) {
+CHUNK *read_chunk(FILE *fileptr) {
     if (fileptr == NULL) {
         printf("Error with file.\n");
         return NULL;
@@ -32,11 +30,6 @@ CHUNK* read_chunk(FILE *fileptr) {
         free(chunk);
         return NULL;
     }
-    /* if (chunk->length > MAX_CHUNK_LENGTH) { */
-    /*     printf("Chunk Size too big: %u\n", chunk->length); */
-    /*     free(chunk); */
-    /*     return NULL; */
-    /* } */
     chunk->length = swap_endian(chunk->length);
 
     // Read Chunk Type
@@ -52,7 +45,8 @@ CHUNK* read_chunk(FILE *fileptr) {
         printf("Error: Couldn't allocate memory for Chunk Data.\n");
         return NULL;
     }
-    if (fread(chunk->data, sizeof(uint8_t), chunk->length, fileptr) != chunk->length) {
+    if (fread(chunk->data, sizeof(uint8_t), chunk->length, fileptr) !=
+        chunk->length) {
         printf("Error: Couldn't read bytes for Chunk Data.\n");
         free(chunk->data);
         free(chunk);
