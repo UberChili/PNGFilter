@@ -1,6 +1,7 @@
 # Compiler and flags
 CC := gcc
-CFLAGS := -Wall -Werror -Wextra -pedantic -std=c99 -Iinclude -MMD -MP -MJ compile_commands.json
+# CFLAGS := -Iinclude -Wall -Werror -Wextra -pedantic -std=c99 -MMD -MP -MJ compile_commands.json
+CFLAGS := -Iinclude -Wall -Werror -Wextra -pedantic -std=c99
 # CFLAGS := -Wall -Wextra -std=c99 -Iinclude
 
 # Directories
