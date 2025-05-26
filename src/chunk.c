@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+// on Linux
+#include <arpa/inet.h>
 
 #include "chunk.h"
 
@@ -67,12 +69,15 @@ CHUNK *read_chunk(FILE *fileptr) {
 }
 
 // Try to retrieve information from IHDR Chunk
-void interpret_IHDR(CHUNK *chunk) {
+// Previously named "interpret_IHDR"
+void print_image_info(CHUNK *chunk) {
     printf("Length field contained in Chunk: %d\n", chunk->length);
-    IHRD_CHUNK *ihdr = (IHRD_CHUNK *) chunk->data;
+    IHRD_CHUNK *ihdr = (IHRD_CHUNK *)chunk->data;
     printf("Width: %u\n", ntohl(ihdr->width));
     printf("Height: %u\n", ntohl(ihdr->height));
-    printf("Bit depth: %u\n", ntohl(ihdr->bit_depth));
-    printf("Colour type: %u\n", ntohl(ihdr->colour_type));
-    printf("Compression method: %u\n", ntohl(ihdr->compression_method));
+    printf("Bit depth: %u\n", ihdr->bit_depth);
+    printf("Colour type: %u\n", ihdr->colour_type);
+    printf("Compression method: %u\n", ihdr->compression_method);
+    printf("Filter method: %u\n", ihdr->filter_method);
+    printf("Interlace method: %u\n", ihdr->interlace_method);
 }
