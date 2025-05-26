@@ -11,6 +11,7 @@
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         printf("Usage: ./reading <png file>\n");
+        return 1;
     }
 
     // Open input file
@@ -41,12 +42,22 @@ int main(int argc, char *argv[]) {
         }
 
         printf("Chunk Type: %.4s\n", chunk->chunk_type.type_code);
-        if (strncmp(chunk->chunk_type.type_code, "IEND",
-                    sizeof(chunk->chunk_type.type_code)) == 0) {
+        // TODO In here we should do some kind of modification, maybe
+        // Try to do it in a function
+
+        // Check if we reached the end of the PNG file
+        // (Last chunk is always IEND)
+        if (strncmp(chunk->chunk_type.type_code, "IEND", 4) == 0) {
             printf("Reached end of PNG file.\n");
             free(chunk->data);
             free(chunk);
             break;
+        }
+
+        // Get some information
+        if (strncmp(chunk->chunk_type.type_code, "IHDR", 4) == 0) {
+            printf("Found IHDR... Getting some info:\n");
+            interpret_IHDR(chunk);
         }
 
         // Free chunk after using it
@@ -54,7 +65,7 @@ int main(int argc, char *argv[]) {
         free(chunk);
     }
 
-    // Free shit and close file
+    // Free stuff and close file
     fclose(inptr);
     return 0;
 }
