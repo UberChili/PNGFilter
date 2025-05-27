@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 // on Linux
-/* #include <arpa/inet.h> */
+#include <arpa/inet.h>
 
 #include "chunk.h"
+
+#define ZLIB_CHUNK 16384
 
 const uint32_t MAX_CHUNK_LENGTH = 2147483647;
 
@@ -81,3 +83,7 @@ void print_image_info(CHUNK *chunk) {
     printf("Filter method: %u\n", ihdr->filter_method);
     printf("Interlace method: %u\n", ihdr->interlace_method);
 }
+
+// From that thread in dpt:
+// The next step is to link zlib and decode the IDAT stream. Which would do so
+// much better if you didn't have to create some more chunk copies.
