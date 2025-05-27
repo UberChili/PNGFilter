@@ -27,4 +27,5 @@ uint32_t swap_endian(uint32_t val);
 CHUNK* read_chunk(FILE *file);
 
 // Prints information from IHDR Chunk
-void interpret_IHDR(CHUNK *chunk);
+// Previously named "Interpret_IHDR"
+void print_image_info(CHUNK *chunk);

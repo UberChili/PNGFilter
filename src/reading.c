@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
         // Get some information
         if (strncmp(chunk->chunk_type.type_code, "IHDR", 4) == 0) {
             printf("Found IHDR... Getting some info:\n");
-            interpret_IHDR(chunk);
+            print_image_info(chunk);
         }
 
         // Free chunk after using it
